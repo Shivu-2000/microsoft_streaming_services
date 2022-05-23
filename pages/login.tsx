@@ -26,7 +26,7 @@ const Login = () => {
         <div className="relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent">
             <Head>
                 <title>NEWFLICKS</title>
-                <meta name="description" content="Netflix clone Project" />
+                <meta name="description" content="Netflix clone example" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Image
