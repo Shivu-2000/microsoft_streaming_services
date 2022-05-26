@@ -1,23 +1,26 @@
-import Head from 'next/head'
-import Header from '../components/Header'
-import { useRecoilValue } from 'recoil'
-import { modalState } from '../atoms/modalAtom'
-import Banner from '../components/Banner'
-import requests from '../utils/requests'
-import { Movie } from '../typing'
-import Row from '../components/Row'
-import useAuth from '../hooks/useAuth'
-import Modal from '../components/Modal'
+/** @format */
+
+import Head from "next/head";
+import Header from "../components/Header";
+import { useRecoilValue } from "recoil";
+import { modalState, movieState } from "../atoms/modalAtom";
+import Banner from "../components/Banner";
+import requests from "../utils/requests";
+import { Movie } from "../typing";
+import Row from "../components/Row";
+import useAuth from "../hooks/useAuth";
+import useList from "../hooks/useList";
+import Modal from "../components/Modal";
 
 interface Props {
-  netflixOriginals: Movie[]
-  trendingNow: Movie[]
-  topRated: Movie[]
-  actionMovies: Movie[]
-  comedyMovies: Movie[]
-  horrorMovies: Movie[]
-  romanceMovies: Movie[]
-  documentaries: Movie[]
+  netflixOriginals: Movie[];
+  trendingNow: Movie[];
+  topRated: Movie[];
+  actionMovies: Movie[];
+  comedyMovies: Movie[];
+  horrorMovies: Movie[];
+  romanceMovies: Movie[];
+  documentaries: Movie[];
 }
 
 const Home = ({
@@ -30,17 +33,24 @@ const Home = ({
   topRated,
   trendingNow,
 }: Props) => {
-  const { logout, loading } = useAuth();
-  const showModal = useRecoilValue(modalState)
+  const { user, loading } = useAuth();
+  const showModal = useRecoilValue(modalState);
+  const movie = useRecoilValue(movieState);
+  console.log("user:::", user);
+  const list = useList(user?.uid);
+  console.log("list:::", list);
 
-  if(loading) return null
-  
+  if (loading) return null;
+
   return (
     <div className="relative h-screen bg-gradient-to-b lg:h-[140vh]">
       <Head>
-        <title>HOME-NEWFLICKS</title>
+        <title>
+          {" "}
+          {movie?.title || movie?.original_name || "Home"} - Newflicks
+        </title>
         <meta name="description" content="Netflix clone Project" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="shortcut icon" href="/favicon/favicon.ico" />
       </Head>
 
       <Header />
@@ -49,23 +59,22 @@ const Home = ({
         <section className="md:space-y-24">
           <Row title="Trending Now" movies={trendingNow} />
           <Row title="Top Rated" movies={topRated} />
-          <Row title="Action Thrillers" movies={actionMovies} />
-          {/* My List */}
-          {/* {list.length > 0 && <Row title="My List" movies={list} />} */}
+          {/* My List Row*/}
+          {list.length > 0 && <Row title="My List" movies={list} />}
 
+          <Row title="Action Thrillers" movies={actionMovies} />
           <Row title="Comedies" movies={comedyMovies} />
           <Row title="Scary Movies" movies={horrorMovies} />
           <Row title="Romance Movies" movies={romanceMovies} />
           <Row title="Documentaries" movies={documentaries} />
         </section>
       </main>
-      {showModal && <Modal /> }
+      {showModal && <Modal />}
     </div>
-  )
-}
+  );
+};
 
-export default Home
-
+export default Home;
 
 export const getServerSideProps = async () => {
   const [
@@ -86,7 +95,7 @@ export const getServerSideProps = async () => {
     fetch(requests.fetchHorrorMovies).then((res) => res.json()),
     fetch(requests.fetchRomanceMovies).then((res) => res.json()),
     fetch(requests.fetchDocumentaries).then((res) => res.json()),
-  ])
+  ]);
 
   return {
     props: {
@@ -97,7 +106,7 @@ export const getServerSideProps = async () => {
       comedyMovies: comedyMovies.results,
       horrorMovies: horrorMovies.results,
       romanceMovies: romanceMovies.results,
-      documentaries: documentaries.results
+      documentaries: documentaries.results,
     },
-  }
-}
+  };
+};
