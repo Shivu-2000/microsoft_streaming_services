@@ -46,16 +46,16 @@ Few Screenshot below to showcase the workflow:
 ## Apllication Screenshots 
 
 - Filtering based on user watched history
-  ![Screenshot](./Screenshots/log-in.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/log-in%20validations.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/user%20not%20found%20authentication%20error.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/In%20playing%20.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/main%20screen.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/My%20List%20Row.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/recommendations%20from%20top%20to%20bottom.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/recommended%20.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/toast%20while%20saving%20movie%20to%20mylist%20.png"workflow Screenshot")
-  ![Screenshot](./Screenshots/user%20not%20found%20authentication%20error.png"workflow Screenshot")
+  ![Screenshot](./Screenshots/log-in.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/log-in%20validations.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/user%20not%20found%20authentication%20error.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/In%20playing%20.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/main%20screen.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/My%20List%20Row.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/recommendations%20from%20top%20to%20bottom.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/recommended%20.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/toast%20while%20saving%20movie%20to%20mylist%20.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/user%20not%20found%20authentication%20error.png "workflow Screenshot")
 
 ## Apllication Screenshots on Laptop
 
