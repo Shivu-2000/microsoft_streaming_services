@@ -11,6 +11,7 @@ import Row from "../components/Row";
 import useAuth from "../hooks/useAuth";
 import useList from "../hooks/useList";
 import Modal from "../components/Modal";
+import useIntrestList from "../hooks/useIntrestList";
 
 interface Props {
   netflixOriginals: Movie[];
@@ -36,9 +37,57 @@ const Home = ({
   const { user, loading } = useAuth();
   const showModal = useRecoilValue(modalState);
   const movie = useRecoilValue(movieState);
-  console.log("user:::", user);
-  const list = useList(user?.uid);
-  console.log("list:::", list);
+
+  const watchList = useList(user?.uid);
+  const intrestList = useIntrestList(user?.uid);
+  //console.log("user:::", user);
+  //console.log("list:::", list);
+  // console.log("movie:::", movie);
+
+  const getRecommendedMovies = (list: any[]) => {
+    const allGeneresFromList = list.map((item) => {
+      return item?.genre_ids;
+    });
+
+    const getUniqueGeneresFromList = allGeneresFromList
+      .flat()
+      .filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      });
+
+    const getRecommendedMovies = [
+      ...netflixOriginals,
+      ...actionMovies,
+      ...comedyMovies,
+      ...documentaries,
+      ...horrorMovies,
+      ...romanceMovies,
+      ...topRated,
+      ...trendingNow,
+    ].filter((movie) => {
+      // console.log("netflix movie?.genre_ids", movie?.genre_ids)
+      const matched = movie?.genre_ids.filter(
+        (id) => getUniqueGeneresFromList.includes(id) && id
+      );
+      // console.log("matched::::=>", matched)
+      return matched.length > 0 && matched;
+    });
+
+    // console.log("getUniqueGeneresFromList", getUniqueGeneresFromList);
+    const recmmendedMovies = getRecommendedMovies.filter(
+      (item) => item?.vote_average > 8
+    );
+    const getUniqueRecommendMovies = [
+      ...new Map(recmmendedMovies.map((item) => [item["id"], item])).values(),
+    ]
+      .sort((a, b) => b?.vote_average - a?.vote_average)
+      .slice(0, 10);
+
+    // console.log("getRecommendedMovies", [...new Map(recmmendedMovies.map(item => [item['id'], item])).values()].slice(0, 10));
+    return (
+      (getUniqueRecommendMovies.length > 0 && getUniqueRecommendMovies) || null
+    );
+  };
 
   if (loading) return null;
 
@@ -57,16 +106,26 @@ const Home = ({
       <main className="relative pl-4 pb-4 md:pt-12 lg:space-x-2 lg:pl-16 lg:pt-16">
         <Banner netflixOriginals={netflixOriginals} />
         <section className="md:space-y-24">
-          <Row title="Trending Now" movies={trendingNow} />
-          <Row title="Top Rated" movies={topRated} />
-          {/* My List Row*/}
-          {list.length > 0 && <Row title="My List" movies={list} />}
+          <>
+            {getRecommendedMovies([...intrestList, ...watchList]) && (
+              <Row
+                title="Recommended"
+                movies={
+                  getRecommendedMovies([...intrestList, ...watchList]) || []
+                }
+              />
+            )}
+            <Row title="Trending Now" movies={trendingNow} />
+            <Row title="Top Rated" movies={topRated} />
+            {/* My List Row */}
+            {watchList.length > 0 && <Row title="My List" movies={watchList} />}
 
-          <Row title="Action Thrillers" movies={actionMovies} />
-          <Row title="Comedies" movies={comedyMovies} />
-          <Row title="Scary Movies" movies={horrorMovies} />
-          <Row title="Romance Movies" movies={romanceMovies} />
-          <Row title="Documentaries" movies={documentaries} />
+            <Row title="Action Thrillers" movies={actionMovies} />
+            <Row title="Comedies" movies={comedyMovies} />
+            <Row title="Scary Movies" movies={horrorMovies} />
+            <Row title="Romance Movies" movies={romanceMovies} />
+            <Row title="Documentaries" movies={documentaries} />
+          </>
         </section>
       </main>
       {showModal && <Modal />}
