@@ -22,7 +22,7 @@ import {
 import { db } from "../firebase";
 import useAuth from "../hooks/useAuth";
 import toast, { Toaster } from "react-hot-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRecoilState } from "recoil";
 import { modalState, movieState } from "../atoms/modalAtom";
 import { Genre, Movie, Element } from "../typing";
@@ -40,6 +40,7 @@ const Modal = () => {
   const [played, setPlayed] = useState<number>(0);
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState<number>(0);
+  const player = useRef(null);
 
   const toastStyle = {
     background: "white",
@@ -77,12 +78,23 @@ const Modal = () => {
         setGenres(data.genres);
       }
 
-      console.log("data", data);
+      //console.log("data", data);
     }
 
     fetchMovie();
   }, [movie]);
 
+  const saveUserIntrest = async (intrest: any) => {
+    // console.log("intrest::::=>", intrest)
+    if (intrest > 50) {
+      await setDoc(
+        doc(db, "customers", user!.uid, "intrestList", movie?.id.toString()!),
+        {
+          ...movie,
+        }
+      );
+    }
+  };
   const handleClose = () => {
     setShowModal(false);
     setMovie(null);
@@ -140,7 +152,7 @@ const Modal = () => {
   };
 
   const handleDuration = (duration: number) => {
-    console.log("onDuration", duration);
+    //console.log("onDuration", duration);
     setDuration(duration);
   };
 
@@ -149,8 +161,17 @@ const Modal = () => {
   };
 
   const handlePlay = () => {
+    // console.log("onPlay");
+    // console.log("playtime", player);
     setPlaying(!playing);
     setMuted(!muted);
+  };
+
+  const handlePause = () => {
+    console.log("onPause");
+    // console.log("playtime", player);
+    setPlaying(false);
+    setMuted(true);
   };
 
   return (
@@ -171,7 +192,11 @@ const Modal = () => {
 
         <div className="relative pt-[56.25%]">
           <ReactPlayer
-            url={`https://www.youtube.com/watch?v=${trailer}`}
+            url={`https://www.youtube.com/watch?v=${
+              trailer ? trailer : `Go8nTmfrQd8`
+            }`}
+            controls
+            // ref={player}
             width="100%"
             height="100%"
             style={{ position: "absolute", top: "0", left: "0" }}
@@ -180,16 +205,18 @@ const Modal = () => {
             onError={(e) => console.log("onError", e)}
             onReady={() => console.log("onReady")}
             onStart={() => console.log("onStart")}
-            onProgress={handleProgress}
+            onPause={handlePause}
+            onProgress={(state) => handleProgress(state)}
             onDuration={handleDuration}
-            config={{
-              file: {
-                attributes: {
-                  crossOrigin: "anonymous",
-                },
-              },
-            }}
           />
+          <div className="absolute bottom-20 my-5 flex w-full items-center justify-center px-10">
+            {!trailer && (
+              <div className="bg-[#181818] text-white text-xl font-bold px-5 py-5 hover:bg-[#292929]">
+                The Seleted is not available, please try again later. (Instead
+                played the fallback video)
+              </div>
+            )}
+          </div>
           <div className="absolute bottom-10 flex w-full items-center justify-between px-10">
             <div className="flex space-x-2">
               <button
@@ -200,16 +227,20 @@ const Modal = () => {
                 <FaPlay className="h-7 w-7 text-black" />
                 {!playing ? "Play" : "Pause"}
               </button>
-              <button className="modalButton" onClick={handleList}>
-                {addedToList ? (
-                  <CheckIcon className="h-7 w-7" />
-                ) : (
-                  <PlusIcon className="h-7 w-7" />
-                )}
-              </button>
-              <button className="modalButton">
-                <ThumbUpIcon className="h-6 w-6" />
-              </button>
+              {trailer && (
+                <>
+                  <button className="modalButton" onClick={handleList}>
+                    {addedToList ? (
+                      <CheckIcon className="h-7 w-7" />
+                    ) : (
+                      <PlusIcon className="h-7 w-7" />
+                    )}
+                  </button>
+                  <button className="modalButton">
+                    <ThumbUpIcon className="h-6 w-6" />
+                  </button>
+                </>
+              )}
             </div>
             <button className="modalButton" onClick={() => setMuted(!muted)}>
               {muted ? (
@@ -220,46 +251,61 @@ const Modal = () => {
             </button>
           </div>
         </div>
-        <div className="flex space-x-16 rounded-b-md bg-[#181818] px-10 py-8">
-          <div className="space-y-6 text-lg">
-            <div className="flex items-center space-x-2 text-sm">
-              <div className="font-semibold text-green-400">
+        {trailer && (
+          <div className="flex space-x-16 rounded-b-md bg-[#181818] px-10 py-8">
+            <div className="space-y-6 text-lg">
+              <div className="flex items-center space-x-2 text-sm">
+                <p className="font-semibold text-green-400">
+                  <span>Played:</span> <p>{played.toFixed(3)}</p>
+                </p>
+                <p className="font-semibold text-green-400">
+                  <span>Duration:</span> <Duration seconds={duration} />
+                </p>
+                <p className="font-semibold text-green-400">
+                  <span>Elapsed:</span> <Duration seconds={duration * played} />
+                </p>
+                <p className="font-semibold text-green-400">
+                  <span>Remaining:</span>{" "}
+                  <Duration seconds={duration * (1 - played)} />
+                </p>
+                {/* <div className="font-semibold text-green-400">
                 Played: {played.toFixed(3)}, Duration:{" "}
                 <Duration seconds={duration} />
                 Elapsed: <Duration seconds={duration * played} />
                 Remaining: <Duration seconds={duration * (1 - played)} />
-              </div>
-              <p className="font-semibold text-green-400">
-                {movie!.vote_average * 10}% Match
-              </p>
-              <p className="font-light">
-                {movie?.release_date || movie?.first_air_date}
-              </p>
-              <div className="flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs">
-                HD
-              </div>
-            </div>
-            <div className="flex flex-col gap-x-10 gap-y-4 font-light md:flex-row">
-              <p className="w-5/6">{movie?.overview}</p>
-              <div className="flex flex-col space-y-3 text-sm">
-                <div>
-                  <span className="text-[gray]">Genres:</span>{" "}
-                  {genres.map((genre) => genre.name).join(", ")}
+              </div> */}
+                <p className="font-semibold text-green-400">
+                  {movie!.vote_average * 10}% Match
+                </p>
+                <p className="font-light">
+                  {movie?.release_date || movie?.first_air_date}
+                </p>
+                <div className="flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs">
+                  HD
                 </div>
+              </div>
+              <div className="flex flex-col gap-x-10 gap-y-4 font-light md:flex-row">
+                <p className="w-5/6">{movie?.overview}</p>
+                <div className="flex flex-col space-y-3 text-sm">
+                  <div>
+                    <span className="text-[gray]">Genres:</span>{" "}
+                    {genres.map((genre) => genre.name).join(", ")}
+                  </div>
 
-                <div>
-                  <span className="text-[gray]">Original language:</span>{" "}
-                  {movie?.original_language}
-                </div>
+                  <div>
+                    <span className="text-[gray]">Original language:</span>{" "}
+                    {movie?.original_language}
+                  </div>
 
-                <div>
-                  <span className="text-[gray]">Total votes:</span>{" "}
-                  {movie?.vote_count}
+                  <div>
+                    <span className="text-[gray]">Total votes:</span>{" "}
+                    {movie?.vote_count}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </>
     </MuiModal>
   );

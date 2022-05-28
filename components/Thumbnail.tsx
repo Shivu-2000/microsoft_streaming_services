@@ -8,9 +8,10 @@ import { Movie } from "../typing";
 
 interface Props {
   movie: Movie | DocumentData;
+  title: string;
 }
 
-const Thumbnail = ({ movie }: Props) => {
+const Thumbnail = ({ movie, title }: Props) => {
   const [currentMovie, setCurrentMovie] = useRecoilState(movieState);
   const [showModal, setShowModal] = useRecoilState(modalState);
 
@@ -30,6 +31,14 @@ const Thumbnail = ({ movie }: Props) => {
         layout="fill"
         alt=""
       />
+      {title && title === "Recommended" && (
+        <div
+          className="absolute bottom-0 right-0 
+          px-1 py-1 rounded text-white bg-[#158e15] text-lg"
+        >
+          {`${movie?.vote_average * 10}%`}
+        </div>
+      )}
     </div>
   );
 };
