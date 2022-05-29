@@ -85,7 +85,7 @@ const Modal = () => {
 
   const saveUserIntrest = async (intrest: any) => {
     // console.log("intrest::::=>", intrest)
-    if (intrest > 50) {
+    if (intrest > 40) {
       await setDoc(
         doc(db, "customers", user!.uid, "intrestList", movie?.id.toString()!),
         {
