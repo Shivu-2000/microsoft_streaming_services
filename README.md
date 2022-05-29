@@ -6,7 +6,7 @@
 
 | Application URL :white_check_mark:               | User :smiley:       | Password :monocle_face: |
 | ------------------------------------------------ | ------------------- | ----------------------- |
-| https://microsoft-streaming-services.vercel.app/ | shivu2000@gmail.com | Shiv@2                  |
+| https://microsoft-streaming-services.vercel.app/ | shivu2000@gmail.com | Shiv@20                  |
 
 ---
 
