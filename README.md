@@ -1,10 +1,12 @@
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
 # The Movie Recommender System
+
+# NEWFLICKS
 
 ---
 
-**Application url:** https://microsoft-streaming-services.vercel.app/
+| Application URL :white_check_mark:               | User :smiley:       | Password :monocle_face: |
+| ------------------------------------------------ | ------------------- | ----------------------- |
+| https://microsoft-streaming-services.vercel.app/ | shivu2000@gmail.com | Shiv@2                  |
 
 ---
 
@@ -12,9 +14,9 @@ Recommender System is a system that seeks to predict or filter preferences accor
 
 ![Architecture diagram of movie Recommender System](./Screenshots/filtering%20types.png "Architecture diagram of movie Recommender System")
 
-## Architecture Screenshot
+## Architecture Diagram
 
-![Architecture Screenshot of this application](./Screenshots/microsoft_streaming_services%architecture-Screenshot.png "Architecture Screenshot")
+![Architecture Screenshot of this application](./Screenshots/microsoft_streaming_services%20architecture-diagram.png "Architecture Screenshot")
 
 ---
 
@@ -43,7 +45,19 @@ Few Screenshot below to showcase the workflow:
 
 ---
 
-## Apllication Screenshots 
+## Checklist
+
+- [x] Browser testing
+- [x] Mobile responsiveness checked
+- [x] Project deployed
+- [x] Screenshot added
+
+## Fully responsive Website
+
+- The website is fully responsive on the large, meduim and small screens like
+  Laptop/Desktop, tablets and phones and feature changes as true netflix.
+
+## Apllication Screenshots on Laptop
 
 - Filtering based on user watched history
   ![Screenshot](./Screenshots/log-in.png "workflow Screenshot")
@@ -53,18 +67,20 @@ Few Screenshot below to showcase the workflow:
   ![Screenshot](./Screenshots/main%20screen.png "workflow Screenshot")
   ![Screenshot](./Screenshots/My%20List%20Row.png "workflow Screenshot")
   ![Screenshot](./Screenshots/recommendations%20from%20top%20to%20bottom.png "workflow Screenshot")
-  ![Screenshot](./Screenshots/recommended%20.png "workflow Screenshot")
+  ![Screenshot](./Screenshots/recommended.png "workflow Screenshot")
   ![Screenshot](./Screenshots/toast%20while%20saving%20movie%20to%20mylist%20.png "workflow Screenshot")
   ![Screenshot](./Screenshots/user%20not%20found%20authentication%20error.png "workflow Screenshot")
 
-## Apllication Screenshots on Laptop
+## Apllication Screenshots on Phone
 
 - Filtering based on user watched history
-
-## Fully responsive Website
-
-- The website is fully responsive on the large, meduim and small screens like
-  Laptop/Desktop, tablets and phones and feature changes as true netflix.
+  ![Screenshot](./Screenshots/login%20page.jpg "workflow Screenshot")
+  ![Screenshot](./Screenshots/in%20playing.jpg "workflow Screenshot")
+  ![Screenshot](./Screenshots/login%20validation.jpg "workflow Screenshot")
+  ![Screenshot](./Screenshots/main%20screen.jpg "workflow Screenshot")
+  ![Screenshot](./Screenshots/reccomended.jpg "workflow Screenshot")
+  ![Screenshot](./Screenshots/toast%20used%20while%20updating%20mylist.jpg "workflow Screenshot")
+  ![Screenshot](./Screenshots/wrong%20password%20auth.jpg "workflow Screenshot")
 
 ### Future scope
 
