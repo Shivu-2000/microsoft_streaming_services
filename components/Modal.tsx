@@ -11,6 +11,8 @@ import {
 import { FaPlay } from "react-icons/fa";
 import ReactPlayer from "react-player/lazy";
 import MuiModal from "@mui/material/Modal";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import {
   collection,
   deleteDoc,
@@ -22,11 +24,10 @@ import {
 import { db } from "../firebase";
 import useAuth from "../hooks/useAuth";
 import toast, { Toaster } from "react-hot-toast";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState, movieState } from "../atoms/modalAtom";
 import { Genre, Movie, Element } from "../typing";
-import Duration from "./Duration";
 
 const Modal = () => {
   const [movie, setMovie] = useRecoilState(movieState);
@@ -40,8 +41,7 @@ const Modal = () => {
   const [played, setPlayed] = useState<number>(0);
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState<number>(0);
-  const player = useRef(null);
-
+  const player = useRef<any>(null);
   const toastStyle = {
     background: "white",
     color: "black",
@@ -77,8 +77,7 @@ const Modal = () => {
       if (data?.genres) {
         setGenres(data.genres);
       }
-
-      //console.log("data", data);
+      // console.log("data", data);
     }
 
     fetchMovie();
@@ -95,9 +94,16 @@ const Modal = () => {
       );
     }
   };
+
   const handleClose = () => {
     setShowModal(false);
     setMovie(null);
+    // console.log("total played %::::=>", ((player?.current?.getCurrentTime()*100)/duration).toFixed(2));
+    const userIntrestInMovie = (
+      (player?.current?.getCurrentTime() * 100) /
+      duration
+    ).toFixed(2);
+    saveUserIntrest(userIntrestInMovie);
     toast.dismiss();
   };
 
@@ -152,7 +158,7 @@ const Modal = () => {
   };
 
   const handleDuration = (duration: number) => {
-    //console.log("onDuration", duration);
+    // console.log('onDuration', duration)
     setDuration(duration);
   };
 
@@ -161,17 +167,31 @@ const Modal = () => {
   };
 
   const handlePlay = () => {
-    // console.log("onPlay");
-    // console.log("playtime", player);
+    // console.log("onPlay", player);
+    // console.log("onPlay", player?.current?.getCurrentTime());
     setPlaying(!playing);
     setMuted(!muted);
   };
 
   const handlePause = () => {
     console.log("onPause");
-    // console.log("playtime", player);
+    // console.log("duration", duration);
+    // console.log("onPause", player?.current?.getCurrentTime());
+    // console.log("total played %::::=>", ((player?.current?.getCurrentTime()*100)/duration).toFixed(2));
     setPlaying(false);
     setMuted(true);
+  };
+
+  const showLoading = () => {
+    return (
+      <div className="flex justify-center align-center">
+        <div className="relative pt-[30.25%] inline-block">
+          <Box sx={{ display: "flex" }}>
+            <CircularProgress />
+          </Box>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -182,53 +202,44 @@ const Modal = () => {
       overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
     >
       <>
-        <Toaster position="bottom-center" />
-        <button
-          className="modalButton absolute right-5 top-5 !z-40 h-9 w-9 border-none bg-[#181818] hover:bg-[#181818]"
-          onClick={handleClose}
-        >
-          <XIcon className="h-6 w-6" />
-        </button>
+        {trailer === undefined ? (
+          showLoading()
+        ) : (
+          <>
+            <Toaster position="bottom-center" />
+            <button
+              className="modalButton absolute right-5 top-5 !z-40 h-9 w-9 border-none bg-[#181818] hover:bg-[#181818]"
+              onClick={handleClose}
+            >
+              <XIcon className="h-6 w-6" />
+            </button>
 
-        <div className="relative pt-[56.25%]">
-          <ReactPlayer
-            url={`https://www.youtube.com/watch?v=${
-              trailer ? trailer : `Go8nTmfrQd8`
-            }`}
-            controls
-            // ref={player}
-            width="100%"
-            height="100%"
-            style={{ position: "absolute", top: "0", left: "0" }}
-            playing={playing}
-            muted={muted}
-            onError={(e) => console.log("onError", e)}
-            onReady={() => console.log("onReady")}
-            onStart={() => console.log("onStart")}
-            onPause={handlePause}
-            onProgress={(state) => handleProgress(state)}
-            onDuration={handleDuration}
-          />
-          <div className="absolute bottom-20 my-5 flex w-full items-center justify-center px-10">
-            {!trailer && (
-              <div className="bg-[#181818] text-white text-xl font-bold px-5 py-5 hover:bg-[#292929]">
-                The Seleted is not available, please try again later. (Instead
-                played the fallback video)
-              </div>
-            )}
-          </div>
-          <div className="absolute bottom-10 flex w-full items-center justify-between px-10">
-            <div className="flex space-x-2">
-              <button
-                className="flex items-center gap-x-2 rounded bg-white 
-                  px-8 text-xl font-bold text-black transition hover:bg-[#e6e6e6]"
-                onClick={handlePlay}
-              >
-                <FaPlay className="h-7 w-7 text-black" />
-                {!playing ? "Play" : "Pause"}
-              </button>
-              {trailer && (
-                <>
+            <div className="relative pt-[56.25%]">
+              <ReactPlayer
+                ref={player}
+                url={`https://www.youtube.com/watch?v=${trailer}`}
+                width="100%"
+                height="100%"
+                style={{ position: "absolute", top: "0", left: "0" }}
+                playing={playing}
+                muted={muted}
+                onError={(e) => console.log("onError", e)}
+                onReady={() => console.log("onReady")}
+                onStart={() => console.log("onStart")}
+                onPause={handlePause}
+                onProgress={(state) => handleProgress(state)}
+                onDuration={handleDuration}
+              />
+              <div className="absolute bottom-10 flex w-full items-center justify-between px-10">
+                <div className="flex space-x-2">
+                  <button
+                    className="flex items-center gap-x-2 rounded bg-white 
+                    px-8 py-2 text-xl font-bold text-black transition hover:bg-[#e6e6e6]"
+                    onClick={handlePlay}
+                  >
+                    <FaPlay className="h-7 w-7 text-black" />
+                    {!playing ? "Play" : "Pause"}
+                  </button>
                   <button className="modalButton" onClick={handleList}>
                     {addedToList ? (
                       <CheckIcon className="h-7 w-7" />
@@ -239,72 +250,54 @@ const Modal = () => {
                   <button className="modalButton">
                     <ThumbUpIcon className="h-6 w-6" />
                   </button>
-                </>
-              )}
-            </div>
-            <button className="modalButton" onClick={() => setMuted(!muted)}>
-              {muted ? (
-                <VolumeOffIcon className="h-6 w-6" />
-              ) : (
-                <VolumeUpIcon className="h-6 w-6" />
-              )}
-            </button>
-          </div>
-        </div>
-        {trailer && (
-          <div className="flex space-x-16 rounded-b-md bg-[#181818] px-10 py-8">
-            <div className="space-y-6 text-lg">
-              <div className="flex items-center space-x-2 text-sm">
-                <p className="font-semibold text-green-400">
-                  <span>Played:</span> <p>{played.toFixed(3)}</p>
-                </p>
-                <p className="font-semibold text-green-400">
-                  <span>Duration:</span> <Duration seconds={duration} />
-                </p>
-                <p className="font-semibold text-green-400">
-                  <span>Elapsed:</span> <Duration seconds={duration * played} />
-                </p>
-                <p className="font-semibold text-green-400">
-                  <span>Remaining:</span>{" "}
-                  <Duration seconds={duration * (1 - played)} />
-                </p>
-                {/* <div className="font-semibold text-green-400">
-                Played: {played.toFixed(3)}, Duration:{" "}
-                <Duration seconds={duration} />
-                Elapsed: <Duration seconds={duration * played} />
-                Remaining: <Duration seconds={duration * (1 - played)} />
-              </div> */}
-                <p className="font-semibold text-green-400">
-                  {movie!.vote_average * 10}% Match
-                </p>
-                <p className="font-light">
-                  {movie?.release_date || movie?.first_air_date}
-                </p>
-                <div className="flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs">
-                  HD
                 </div>
+                <button
+                  className="modalButton"
+                  onClick={() => setMuted(!muted)}
+                >
+                  {muted ? (
+                    <VolumeOffIcon className="h-6 w-6" />
+                  ) : (
+                    <VolumeUpIcon className="h-6 w-6" />
+                  )}
+                </button>
               </div>
-              <div className="flex flex-col gap-x-10 gap-y-4 font-light md:flex-row">
-                <p className="w-5/6">{movie?.overview}</p>
-                <div className="flex flex-col space-y-3 text-sm">
-                  <div>
-                    <span className="text-[gray]">Genres:</span>{" "}
-                    {genres.map((genre) => genre.name).join(", ")}
+            </div>
+            <div className="flex space-x-16 rounded-b-md bg-[#181818] px-10 py-8">
+              <div className="space-y-6 text-lg">
+                <div className="flex items-center space-x-2 text-sm">
+                  <p className="font-semibold text-green-400">
+                    {movie!.vote_average * 10}% Match
+                  </p>
+                  <p className="font-light">
+                    {movie?.release_date || movie?.first_air_date}
+                  </p>
+                  <div className="flex h-4 items-center justify-center rounded border border-white/40 px-1.5 text-xs">
+                    HD
                   </div>
+                </div>
+                <div className="flex flex-col gap-x-10 gap-y-4 font-light md:flex-row">
+                  <p className="w-5/6">{movie?.overview}</p>
+                  <div className="flex flex-col space-y-3 text-sm">
+                    <div>
+                      <span className="text-[gray]">Genres:</span>{" "}
+                      {genres.map((genre) => genre.name).join(", ")}
+                    </div>
 
-                  <div>
-                    <span className="text-[gray]">Original language:</span>{" "}
-                    {movie?.original_language}
-                  </div>
+                    <div>
+                      <span className="text-[gray]">Original language:</span>{" "}
+                      {movie?.original_language}
+                    </div>
 
-                  <div>
-                    <span className="text-[gray]">Total votes:</span>{" "}
-                    {movie?.vote_count}
+                    <div>
+                      <span className="text-[gray]">Total votes:</span>{" "}
+                      {movie?.vote_count}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </>
     </MuiModal>
